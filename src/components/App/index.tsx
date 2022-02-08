@@ -1,11 +1,13 @@
-import React, { memo } from 'react';
+import React, { memo } from 'react'
+
+import FilterRangeSelector from '@Components/Common/FilterRangeSelector'
 
 function App(): React.ReactElement {
   return (
     <main>
-      Hello world, this react app is created by <code>npx create-react-app with template --choffee</code>.
+      <FilterRangeSelector />
     </main>
-  );
+  )
 }
 
-export default memo(App);
+export default memo(App)
