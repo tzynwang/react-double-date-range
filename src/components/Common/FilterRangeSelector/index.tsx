@@ -5,17 +5,13 @@ import Selector from '@Components/Base/Select'
 import DateRangeCalender from '@Components/Base/DateRangeCalender'
 import { DATE_RANGE } from '@Components/GeneralModel'
 
-import Stack from '@mui/material/Stack'
 import { SelectChangeEvent } from '@mui/material/Select'
+
+import { FilterRangeSelectorProps } from './types'
 
 const INITIAL_DATE = {
   createdAt: DATE_RANGE.CLEAR,
   updatedAt: DATE_RANGE.CLEAR
-}
-
-const INITIAL_QUERY = {
-  createdAt: { gte: '', lt: '' },
-  updatedAt: { gte: '', lt: '' }
 }
 
 const CALENDER: {
@@ -26,9 +22,11 @@ const CALENDER: {
   updatedAt: { gte: null, lt: null }
 }
 
-function FilterRangeSelector(): React.ReactElement {
+function FilterRangeSelector(
+  props: FilterRangeSelectorProps
+): React.ReactElement {
   // states
-  const [queryParams, setQueryParams] = useState(INITIAL_QUERY)
+  const { queryParams, setQueryParams } = props
   const [dateRange, setDateRange] = useState(INITIAL_DATE)
   const [calenderFor, setCalenderFor] =
     useState<'createdAt' | 'updatedAt' | ''>('')
@@ -99,8 +97,8 @@ function FilterRangeSelector(): React.ReactElement {
       setQueryParams((prev) => ({
         ...prev,
         createdAt: {
-          gte: dayjs(calender.createdAt.gte).format('YYYY-MM-DD'),
-          lt: dayjs(calender.createdAt.lt).format('YYYY-MM-DD')
+          gte: dayjs(calender.createdAt.gte).format('YYYY年MM月DD日'),
+          lt: dayjs(calender.createdAt.lt).format('YYYY年MM月DD日')
         }
       }))
       setCalenderDialogC(false)
@@ -109,8 +107,8 @@ function FilterRangeSelector(): React.ReactElement {
       setQueryParams((prev) => ({
         ...prev,
         updatedAt: {
-          gte: dayjs(calender.updatedAt.gte).format('YYYY-MM-DD'),
-          lt: dayjs(calender.updatedAt.lt).format('YYYY-MM-DD')
+          gte: dayjs(calender.updatedAt.gte).format('YYYY年MM月DD日'),
+          lt: dayjs(calender.updatedAt.lt).format('YYYY年MM月DD日')
         }
       }))
       setCalenderDialogU(false)
@@ -120,23 +118,14 @@ function FilterRangeSelector(): React.ReactElement {
   // hooks
   useEffect(() => {
     let c = { gte: '', lt: '' }
-    let u = { gte: '', lt: '' }
 
     // if 1, 7, 30, 90
     if (dateRange.createdAt.length && !Number.isNaN(+dateRange.createdAt)) {
       c = {
         gte: dayjs()
           .add(-+dateRange.createdAt, 'day')
-          .format('YYYY-MM-DD'),
-        lt: dayjs().format('YYYY-MM-DD')
-      }
-    }
-    if (dateRange.updatedAt.length && !Number.isNaN(+dateRange.updatedAt)) {
-      u = {
-        gte: dayjs()
-          .add(-+dateRange.updatedAt, 'day')
-          .format('YYYY-MM-DD'),
-        lt: dayjs().format('YYYY-MM-DD')
+          .format('YYYY年MM月DD日'),
+        lt: dayjs().format('YYYY年MM月DD日')
       }
     }
 
@@ -145,15 +134,38 @@ function FilterRangeSelector(): React.ReactElement {
       setCalenderFor('createdAt')
       setCalenderDialogC(true)
     }
+
+    // if clear, remove date range info
+    if (!dateRange.createdAt.length) {
+      c = { gte: '', lt: '' }
+    }
+
+    // finally, set queryParams
+    setQueryParams((prev) => ({
+      ...prev,
+      createdAt: { ...c }
+    }))
+  }, [dateRange.createdAt])
+  useEffect(() => {
+    let u = { gte: '', lt: '' }
+
+    // if 1, 7, 30, 90
+    if (dateRange.updatedAt.length && !Number.isNaN(+dateRange.updatedAt)) {
+      u = {
+        gte: dayjs()
+          .add(-+dateRange.updatedAt, 'day')
+          .format('YYYY年MM月DD日'),
+        lt: dayjs().format('YYYY年MM月DD日')
+      }
+    }
+
+    // if custom, open calender
     if (dateRange.updatedAt === DATE_RANGE.CUSTOM) {
       setCalenderFor('updatedAt')
       setCalenderDialogU(true)
     }
 
     // if clear, remove date range info
-    if (!dateRange.createdAt.length) {
-      c = { gte: '', lt: '' }
-    }
     if (!dateRange.updatedAt.length) {
       u = { gte: '', lt: '' }
     }
@@ -161,10 +173,9 @@ function FilterRangeSelector(): React.ReactElement {
     // finally, set queryParams
     setQueryParams((prev) => ({
       ...prev,
-      createdAt: { ...c },
       updatedAt: { ...u }
     }))
-  }, [dateRange])
+  }, [dateRange.updatedAt])
   useEffect(() => {
     console.log(queryParams)
   }, [queryParams])
@@ -172,24 +183,18 @@ function FilterRangeSelector(): React.ReactElement {
   // main
   return (
     <React.Fragment>
-      <Stack
-        spacing={2}
-        direction="row"
-        sx={{ width: '600px', margin: '1rem' }}
-      >
-        <Selector
-          label={'建立日期區間'}
-          selectLabelId={'createdAtLabel'}
-          value={dateRange.createdAt}
-          handleChange={handleChange('createdAt')}
-        />
-        <Selector
-          label={'更新日期區間'}
-          selectLabelId={'updatedAtLabel'}
-          value={dateRange.updatedAt}
-          handleChange={handleChange('updatedAt')}
-        />
-      </Stack>
+      <Selector
+        label={'建立日期區間'}
+        selectLabelId={'createdAtLabel'}
+        value={dateRange.createdAt}
+        handleChange={handleChange('createdAt')}
+      />
+      <Selector
+        label={'更新日期區間'}
+        selectLabelId={'updatedAtLabel'}
+        value={dateRange.updatedAt}
+        handleChange={handleChange('updatedAt')}
+      />
       <DateRangeCalender
         open={calenderDialogC}
         calenderFor={'createdAt'}
