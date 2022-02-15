@@ -20,7 +20,7 @@ const MENU = [
 
 function Selector(props: SelectorProps): React.ReactElement {
   // props
-  const { label, selectLabelId, value, handleChange } = props
+  const { label, selectLabelId, value, handleChange, dateRange } = props
 
   // main
   return (
@@ -34,7 +34,11 @@ function Selector(props: SelectorProps): React.ReactElement {
       >
         {MENU.map((m) => (
           <MenuItem key={m.value} value={m.value}>
-            {m.label}
+            {value === DATE_RANGE.CUSTOM &&
+            m.value === DATE_RANGE.CUSTOM &&
+            dateRange
+              ? dateRange
+              : m.label}
           </MenuItem>
         ))}
       </Select>

@@ -4,6 +4,7 @@ import { SelectChangeEvent } from '@mui/material/Select'
 export interface SelectorProps {
   label: string
   selectLabelId: string
-  value: DATE_RANGE;
-  handleChange: (event: SelectChangeEvent) => void;
+  value: DATE_RANGE
+  dateRange?: string
+  handleChange: (event: SelectChangeEvent) => void
 }
