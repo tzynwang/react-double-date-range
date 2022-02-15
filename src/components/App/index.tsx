@@ -35,10 +35,7 @@ function App(): React.ReactElement {
         direction="row"
         sx={{ width: '600px', margin: '1rem' }}
       >
-        <FilterRangeSelector
-          queryParams={queryParams}
-          setQueryParams={setQueryParams}
-        />
+        <FilterRangeSelector setQueryParams={setQueryParams} />
       </Stack>
       <Stack sx={{ width: '600px', margin: '1rem' }}>
         <Typography>建立日期區間：{range.createdAt}</Typography>
