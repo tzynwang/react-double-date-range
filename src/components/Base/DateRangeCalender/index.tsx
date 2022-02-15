@@ -30,6 +30,7 @@ function DateRangeCalender(props: DateRangeCalenderProps): React.ReactElement {
           <DatePicker
             label="結束日期"
             value={lt}
+            minDate={gte}
             onChange={(newValue) => setLt(newValue)}
             renderInput={(params) => <TextField {...params} />}
           />
