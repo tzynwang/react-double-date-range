@@ -26,7 +26,7 @@ function FilterRangeSelector(
   props: FilterRangeSelectorProps
 ): React.ReactElement {
   // states
-  const { queryParams, setQueryParams } = props
+  const { setQueryParams } = props
   const [dateRange, setDateRange] = useState(INITIAL_DATE)
   const [calenderFor, setCalenderFor] =
     useState<'createdAt' | 'updatedAt' | ''>('')
@@ -87,9 +87,19 @@ function FilterRangeSelector(
     if (!action) {
       if (calenderFor === 'createdAt') {
         setDateRange((prev) => ({ ...prev, createdAt: DATE_RANGE.CLEAR }))
+        setCalenderDialogC(false)
+        setCalender((prev) => ({
+          ...prev,
+          createdAt: { gte: null, lt: null }
+        }))
       }
       if (calenderFor === 'updatedAt') {
         setDateRange((prev) => ({ ...prev, updatedAt: DATE_RANGE.CLEAR }))
+        setCalenderDialogU(false)
+        setCalender((prev) => ({
+          ...prev,
+          updatedAt: { gte: null, lt: null }
+        }))
       }
     }
 
@@ -131,6 +141,10 @@ function FilterRangeSelector(
             lt: dayjs().format('YYYY年MM月DD日')
           }
         }))
+        setCalender((prev) => ({
+          ...prev,
+          createdAt: { gte: null, lt: null }
+        }))
         break
       case DATE_RANGE.CUSTOM:
         setCalenderFor('createdAt')
@@ -140,6 +154,10 @@ function FilterRangeSelector(
         setQueryParams((prev) => ({
           ...prev,
           createdAt: { gte: '', lt: '' }
+        }))
+        setCalender((prev) => ({
+          ...prev,
+          createdAt: { gte: null, lt: null }
         }))
         break
       default:
@@ -161,6 +179,10 @@ function FilterRangeSelector(
             lt: dayjs().format('YYYY年MM月DD日')
           }
         }))
+        setCalender((prev) => ({
+          ...prev,
+          updatedAt: { gte: null, lt: null }
+        }))
         break
       case DATE_RANGE.CUSTOM:
         setCalenderFor('updatedAt')
@@ -171,14 +193,30 @@ function FilterRangeSelector(
           ...prev,
           updatedAt: { gte: '', lt: '' }
         }))
+        setCalender((prev) => ({
+          ...prev,
+          updatedAt: { gte: null, lt: null }
+        }))
         break
       default:
         return
     }
   }, [dateRange.updatedAt])
+  // reset calender lt when gte > lt
   useEffect(() => {
-    console.log(queryParams)
-  }, [queryParams])
+    if (dayjs(calender.createdAt.gte).diff(dayjs(calender.createdAt.lt)) > 0) {
+      setCalender((prev) => ({
+        ...prev,
+        createdAt: { ...prev.createdAt, lt: null }
+      }))
+    }
+    if (dayjs(calender.updatedAt.gte).diff(dayjs(calender.updatedAt.lt)) > 0) {
+      setCalender((prev) => ({
+        ...prev,
+        updatedAt: { ...prev.updatedAt, lt: null }
+      }))
+    }
+  }, [calender])
 
   // main
   return (
@@ -187,12 +225,26 @@ function FilterRangeSelector(
         label={'建立日期區間'}
         selectLabelId={'createdAtLabel'}
         value={dateRange.createdAt}
+        dateRange={
+          calender.createdAt.gte && calender.createdAt.lt
+            ? `${dayjs(calender.createdAt.gte).format('YYYY/MM/DD')}-${dayjs(
+                calender.createdAt.lt
+              ).format('YYYY/MM/DD')}`
+            : undefined
+        }
         handleChange={handleChange('createdAt')}
       />
       <Selector
         label={'更新日期區間'}
         selectLabelId={'updatedAtLabel'}
         value={dateRange.updatedAt}
+        dateRange={
+          calender.updatedAt.gte && calender.updatedAt.lt
+            ? `${dayjs(calender.updatedAt.gte).format('YYYY/MM/DD')}-${dayjs(
+                calender.updatedAt.lt
+              ).format('YYYY/MM/DD')}`
+            : undefined
+        }
         handleChange={handleChange('updatedAt')}
       />
       <DateRangeCalender
