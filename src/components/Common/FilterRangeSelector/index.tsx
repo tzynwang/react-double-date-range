@@ -117,64 +117,64 @@ function FilterRangeSelector(
 
   // hooks
   useEffect(() => {
-    let c = { gte: '', lt: '' }
-
-    // if 1, 7, 30, 90
-    if (dateRange.createdAt.length && !Number.isNaN(+dateRange.createdAt)) {
-      c = {
-        gte: dayjs()
-          .add(-+dateRange.createdAt, 'day')
-          .format('YYYY年MM月DD日'),
-        lt: dayjs().format('YYYY年MM月DD日')
-      }
+    switch (dateRange.createdAt) {
+      case DATE_RANGE.ONE:
+      case DATE_RANGE.SEVEN:
+      case DATE_RANGE.THIRTY:
+      case DATE_RANGE.NINETY:
+        setQueryParams((prev) => ({
+          ...prev,
+          createdAt: {
+            gte: dayjs()
+              .add(-+dateRange.createdAt, 'day')
+              .format('YYYY年MM月DD日'),
+            lt: dayjs().format('YYYY年MM月DD日')
+          }
+        }))
+        break
+      case DATE_RANGE.CUSTOM:
+        setCalenderFor('createdAt')
+        setCalenderDialogC(true)
+        break
+      case DATE_RANGE.CLEAR:
+        setQueryParams((prev) => ({
+          ...prev,
+          createdAt: { gte: '', lt: '' }
+        }))
+        break
+      default:
+        return
     }
-
-    // if custom, open calender
-    if (dateRange.createdAt === DATE_RANGE.CUSTOM) {
-      setCalenderFor('createdAt')
-      setCalenderDialogC(true)
-    }
-
-    // if clear, remove date range info
-    if (!dateRange.createdAt.length) {
-      c = { gte: '', lt: '' }
-    }
-
-    // finally, set queryParams
-    setQueryParams((prev) => ({
-      ...prev,
-      createdAt: { ...c }
-    }))
   }, [dateRange.createdAt])
   useEffect(() => {
-    let u = { gte: '', lt: '' }
-
-    // if 1, 7, 30, 90
-    if (dateRange.updatedAt.length && !Number.isNaN(+dateRange.updatedAt)) {
-      u = {
-        gte: dayjs()
-          .add(-+dateRange.updatedAt, 'day')
-          .format('YYYY年MM月DD日'),
-        lt: dayjs().format('YYYY年MM月DD日')
-      }
+    switch (dateRange.updatedAt) {
+      case DATE_RANGE.ONE:
+      case DATE_RANGE.SEVEN:
+      case DATE_RANGE.THIRTY:
+      case DATE_RANGE.NINETY:
+        setQueryParams((prev) => ({
+          ...prev,
+          updatedAt: {
+            gte: dayjs()
+              .add(-+dateRange.updatedAt, 'day')
+              .format('YYYY年MM月DD日'),
+            lt: dayjs().format('YYYY年MM月DD日')
+          }
+        }))
+        break
+      case DATE_RANGE.CUSTOM:
+        setCalenderFor('updatedAt')
+        setCalenderDialogU(true)
+        break
+      case DATE_RANGE.CLEAR:
+        setQueryParams((prev) => ({
+          ...prev,
+          updatedAt: { gte: '', lt: '' }
+        }))
+        break
+      default:
+        return
     }
-
-    // if custom, open calender
-    if (dateRange.updatedAt === DATE_RANGE.CUSTOM) {
-      setCalenderFor('updatedAt')
-      setCalenderDialogU(true)
-    }
-
-    // if clear, remove date range info
-    if (!dateRange.updatedAt.length) {
-      u = { gte: '', lt: '' }
-    }
-
-    // finally, set queryParams
-    setQueryParams((prev) => ({
-      ...prev,
-      updatedAt: { ...u }
-    }))
   }, [dateRange.updatedAt])
   useEffect(() => {
     console.log(queryParams)
